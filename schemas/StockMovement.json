@@ -1,0 +1,51 @@
+{
+  "name": "StockMovement",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "in",
+        "out",
+        "distribute",
+        "return",
+        "opname_adjust",
+        "defect"
+      ]
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "from_warehouse": {
+      "type": "string",
+      "description": "Asal (main/staff_id)"
+    },
+    "to_warehouse": {
+      "type": "string",
+      "description": "Tujuan (main/staff_id)"
+    },
+    "staff_id": {
+      "type": "string"
+    },
+    "staff_name": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "reference_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "product_id",
+    "type",
+    "quantity"
+  ]
+}

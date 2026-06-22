@@ -1,0 +1,30 @@
+{
+  "name": "StaffStock",
+  "type": "object",
+  "properties": {
+    "staff_id": {
+      "type": "string"
+    },
+    "staff_name": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "staff_id",
+    "product_id",
+    "quantity"
+  ]
+}

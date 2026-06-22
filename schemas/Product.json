@@ -1,0 +1,62 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "sku": {
+      "type": "string",
+      "description": "Kode SKU Produk"
+    },
+    "name": {
+      "type": "string",
+      "description": "Nama Produk"
+    },
+    "category": {
+      "type": "string",
+      "description": "Kategori"
+    },
+    "variant": {
+      "type": "string",
+      "description": "Variasi/Ukuran"
+    },
+    "hpp": {
+      "type": "number",
+      "description": "Harga Pokok Penjualan (Modal)"
+    },
+    "sell_price": {
+      "type": "number",
+      "description": "Harga Jual"
+    },
+    "stock_main": {
+      "type": "number",
+      "description": "Stok Gudang Utama",
+      "default": 0
+    },
+    "stock_distributed": {
+      "type": "number",
+      "description": "Stok Didistribusikan ke Staff",
+      "default": 0
+    },
+    "supplier_id": {
+      "type": "string",
+      "description": "ID Supplier"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL Gambar Produk"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "sku",
+    "name",
+    "hpp",
+    "sell_price"
+  ]
+}

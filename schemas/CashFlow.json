@@ -1,0 +1,52 @@
+{
+  "name": "CashFlow",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "sale_cash",
+        "deposit",
+        "handover_out",
+        "handover_in",
+        "expense",
+        "refund"
+      ]
+    },
+    "amount": {
+      "type": "number"
+    },
+    "staff_id": {
+      "type": "string"
+    },
+    "staff_name": {
+      "type": "string"
+    },
+    "counterpart_id": {
+      "type": "string",
+      "description": "Staff penerima/pengirim"
+    },
+    "counterpart_name": {
+      "type": "string"
+    },
+    "reference_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "rejected"
+      ],
+      "default": "confirmed"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "amount"
+  ]
+}

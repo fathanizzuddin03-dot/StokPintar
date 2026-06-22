@@ -1,0 +1,65 @@
+{
+  "name": "ApprovalRequest",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "cash_deposit",
+        "bank_transfer",
+        "wholesale_order",
+        "void_transaction",
+        "edit_shipping",
+        "stock_change"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "reference_id": {
+      "type": "string"
+    },
+    "requested_by_id": {
+      "type": "string"
+    },
+    "requested_by_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "approved_by_id": {
+      "type": "string"
+    },
+    "approved_by_name": {
+      "type": "string"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reject_reason": {
+      "type": "string"
+    },
+    "data": {
+      "type": "string",
+      "description": "JSON extra data"
+    }
+  },
+  "required": [
+    "type",
+    "title"
+  ]
+}

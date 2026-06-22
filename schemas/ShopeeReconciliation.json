@@ -1,0 +1,36 @@
+{
+  "name": "ShopeeReconciliation",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string"
+    },
+    "tracking_no": {
+      "type": "string"
+    },
+    "shopee_amount": {
+      "type": "number"
+    },
+    "warehouse_amount": {
+      "type": "number"
+    },
+    "difference": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "matched",
+        "mismatched",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "order_id"
+  ]
+}
