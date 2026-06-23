@@ -50,13 +50,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       setIsLoadingAuth(false);
       setAuthChecked(true);
-      
-      if (error && (error.status === 401 || error.status === 403)) {
-        setAuthError({
-          type: 'auth_required',
-          message: 'Authentication required'
-        });
-      }
+      setAuthError(null); // Clear authError so it doesn't trigger endless reload
     }
   };
 
