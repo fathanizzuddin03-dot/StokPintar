@@ -266,7 +266,9 @@ export const db = {
     Expedition: new EntityService('Expedition'),
     StockMovement: new EntityService('StockMovement'),
     ShopeeReconciliation: new EntityService('ShopeeReconciliation'),
-    AuditLog: new EntityService('AuditLog')
+    AuditLog: new EntityService('AuditLog'),
+    Supplier: new EntityService('Supplier'),
+    Category: new EntityService('Category')
   }
 };
 
@@ -293,6 +295,25 @@ const initializeDatabase = () => {
       { id: 'exp-grab', name: 'GrabExpress', created_date: new Date().toISOString() }
     ];
     localStorage.setItem('sp_Expedition', JSON.stringify(defaultExpeditions));
+  }
+  
+  // Seed Suppliers
+  if (!localStorage.getItem('sp_Supplier')) {
+    const defaultSuppliers = [
+      { id: 'sup-1', name: 'PT Semen Perkasa', phone: '08123456789', created_date: new Date().toISOString() },
+      { id: 'sup-2', name: 'UD Baja Mandiri', phone: '08987654321', created_date: new Date().toISOString() }
+    ];
+    localStorage.setItem('sp_Supplier', JSON.stringify(defaultSuppliers));
+  }
+  
+  // Seed Categories
+  if (!localStorage.getItem('sp_Category')) {
+    const defaultCategories = [
+      { id: 'cat-1', name: 'Bahan Bangunan', description: 'Kategori semen, besi, bata, dll.', created_date: new Date().toISOString() },
+      { id: 'cat-2', name: 'Alat & Perkakas', description: 'Palu, obeng, paku, gergaji, dll.', created_date: new Date().toISOString() },
+      { id: 'cat-3', name: 'Cat & Finishing', description: 'Cat interior, eksterior, kuas, dll.', created_date: new Date().toISOString() }
+    ];
+    localStorage.setItem('sp_Category', JSON.stringify(defaultCategories));
   }
   
   // Seed Products
