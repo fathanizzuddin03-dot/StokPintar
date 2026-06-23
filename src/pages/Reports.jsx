@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { formatRupiah, channelLabel, statusColor } from '@/lib/helpers';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,10 +19,10 @@ export default function Reports() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.Transaction.list('-created_date', 50),
-      base44.entities.CashFlow.list('-created_date', 50),
-      base44.entities.AuditLog.list('-created_date', 50),
+      db.entities.Product.list(),
+      db.entities.Transaction.list('-created_date', 50),
+      db.entities.CashFlow.list('-created_date', 50),
+      db.entities.AuditLog.list('-created_date', 50),
     ]).then(([p, t, c, a]) => {
       setProducts(p);
       setTransactions(t);

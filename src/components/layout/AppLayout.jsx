@@ -7,7 +7,7 @@ import {
   ArrowLeftRight, CheckCircle, BoxSelect, ClipboardList, Menu, X, LogOut, ChevronDown, ChevronRight,
   Truck, Settings, BarChart3, ShieldCheck, PackageSearch
 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 
 const ownerMenu = [
   { label: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -104,7 +104,7 @@ export default function AppLayout() {
               <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
             <button
-              onClick={() => base44.auth.logout('/')}
+              onClick={() => db.auth.logout('/')}
               className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600"
             >
               <LogOut className="w-4 h-4" />

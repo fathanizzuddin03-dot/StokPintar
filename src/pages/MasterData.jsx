@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { formatRupiah } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -21,10 +21,10 @@ export default function MasterData() {
   const load = () => {
     setLoading(true);
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.Supplier.list(),
-      base44.entities.Expedition.list(),
-      base44.entities.Category.list(),
+      db.entities.Product.list(),
+      db.entities.Supplier.list(),
+      db.entities.Expedition.list(),
+      db.entities.Category.list(),
     ]).then(([p, s, e, c]) => {
       setProducts(p); setSuppliers(s); setExpeditions(e); setCategories(c);
     }).finally(() => setLoading(false));
@@ -32,7 +32,7 @@ export default function MasterData() {
   useEffect(() => { load(); }, []);
 
   const saveHpp = async (id) => {
-    await base44.entities.Product.update(id, { hpp: Number(editData.hpp), sell_price: Number(editData.sell_price) });
+    await db.entities.Product.update(id, { hpp: Number(editData.hpp), sell_price: Number(editData.sell_price) });
     toast({ title: 'HPP diperbarui' });
     setEditId(null);
     load();
@@ -42,19 +42,19 @@ export default function MasterData() {
   const [addForm, setAddForm] = useState({});
 
   const handleAddSupplier = async () => {
-    await base44.entities.Supplier.create(addForm);
+    await db.entities.Supplier.create(addForm);
     toast({ title: 'Supplier ditambahkan' });
     setShowAdd(false); setAddForm({});
     load();
   };
   const handleAddExpedition = async () => {
-    await base44.entities.Expedition.create(addForm);
+    await db.entities.Expedition.create(addForm);
     toast({ title: 'Ekspedisi ditambahkan' });
     setShowAdd(false); setAddForm({});
     load();
   };
   const handleAddCategory = async () => {
-    await base44.entities.Category.create(addForm);
+    await db.entities.Category.create(addForm);
     toast({ title: 'Kategori ditambahkan' });
     setShowAdd(false); setAddForm({});
     load();
@@ -132,7 +132,7 @@ export default function MasterData() {
               {suppliers.map(s => (
                 <div key={s.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg">
                   <div><p className="font-medium">{s.name}</p><p className="text-xs text-gray-500">{s.phone || '-'}</p></div>
-                  <button onClick={async () => { await base44.entities.Supplier.delete(s.id); load(); }} className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={async () => { await db.entities.Supplier.delete(s.id); load(); }} className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                 </div>
               ))}
               {suppliers.length === 0 && <p className="text-gray-400 text-sm text-center py-4">Belum ada supplier</p>}
@@ -154,7 +154,7 @@ export default function MasterData() {
               {expeditions.map(e => (
                 <div key={e.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg">
                   <div><p className="font-medium">{e.name}</p><p className="text-xs text-gray-500">{e.code || '-'}</p></div>
-                  <button onClick={async () => { await base44.entities.Expedition.delete(e.id); load(); }} className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={async () => { await db.entities.Expedition.delete(e.id); load(); }} className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                 </div>
               ))}
               {expeditions.length === 0 && <p className="text-gray-400 text-sm text-center py-4">Belum ada ekspedisi</p>}
@@ -176,7 +176,7 @@ export default function MasterData() {
               {categories.map(c => (
                 <div key={c.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg">
                   <div><p className="font-medium">{c.name}</p><p className="text-xs text-gray-500">{c.description || '-'}</p></div>
-                  <button onClick={async () => { await base44.entities.Category.delete(c.id); load(); }} className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={async () => { await db.entities.Category.delete(c.id); load(); }} className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                 </div>
               ))}
               {categories.length === 0 && <p className="text-gray-400 text-sm text-center py-4">Belum ada kategori</p>}

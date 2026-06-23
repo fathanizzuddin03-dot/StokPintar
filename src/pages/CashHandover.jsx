@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { formatRupiah } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ export default function CashHandover() {
   const [form, setForm] = useState({ staff_id: '', amount: '', notes: '' });
 
   useEffect(() => {
-    base44.entities.User.filter({ role: 'staff' }).then(list => {
+    db.entities.User.filter({ role: 'staff' }).then(list => {
       setStaffList(list.filter(s => s.id !== user?.id));
     }).finally(() => setLoading(false));
   }, [user]);
@@ -25,14 +25,14 @@ export default function CashHandover() {
     const amt = Number(form.amount);
 
     // Record outgoing for current user
-    await base44.entities.CashFlow.create({
+    await db.entities.CashFlow.create({
       type: 'handover_out', amount: amt, staff_id: user.id, staff_name: user.full_name,
       counterpart_id: target.id, counterpart_name: target.full_name,
       notes: form.notes || `Serah terima ke ${target.full_name}`, status: 'pending',
     });
 
     // Record incoming for target (pending validation)
-    await base44.entities.CashFlow.create({
+    await db.entities.CashFlow.create({
       type: 'handover_in', amount: amt, staff_id: target.id, staff_name: target.full_name,
       counterpart_id: user.id, counterpart_name: user.full_name,
       notes: form.notes || `Terima dari ${user.full_name}`, status: 'pending',

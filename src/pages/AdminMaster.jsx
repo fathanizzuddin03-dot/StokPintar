@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Plus, Upload, Download } from 'lucide-react';
@@ -16,15 +16,15 @@ export default function AdminMaster() {
   const load = () => {
     setLoading(true);
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.Supplier.list(),
-      base44.entities.Category.list(),
+      db.entities.Product.list(),
+      db.entities.Supplier.list(),
+      db.entities.Category.list(),
     ]).then(([p, s, c]) => { setProducts(p); setSuppliers(s); setCategories(c); }).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
 
   const handleAdd = async () => {
-    await base44.entities.Product.create({
+    await db.entities.Product.create({
       ...form, hpp: Number(form.hpp), sell_price: Number(form.sell_price), stock_main: 0, stock_distributed: 0,
     });
     toast({ title: 'Produk ditambahkan' });
@@ -76,7 +76,7 @@ export default function AdminMaster() {
         };
       }).filter(p => p.sku && p.name);
       if (toCreate.length === 0) { toast({ title: 'Tidak ada data valid', variant: 'destructive' }); return; }
-      await base44.entities.Product.bulkCreate(toCreate);
+      await db.entities.Product.bulkCreate(toCreate);
       toast({ title: `${toCreate.length} produk berhasil diimpor` });
       load();
     };

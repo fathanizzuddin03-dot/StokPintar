@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { formatRupiah } from '@/lib/helpers';
 import { Package, ArrowDownToLine, ArrowUpFromLine, Send, AlertCircle } from 'lucide-react';
 
@@ -25,8 +25,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.StockMovement.list('-created_date', 20),
+      db.entities.Product.list(),
+      db.entities.StockMovement.list('-created_date', 20),
     ]).then(([p, m]) => {
       setProducts(p);
       setMovements(m);

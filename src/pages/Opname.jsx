@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -15,7 +15,7 @@ export default function Opname() {
 
   const load = () => {
     if (!user) return;
-    base44.entities.StaffStock.filter({ staff_id: user.id }).then(setStaffStocks).finally(() => setLoading(false));
+    db.entities.StaffStock.filter({ staff_id: user.id }).then(setStaffStocks).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, [user]);
 
@@ -24,7 +24,7 @@ export default function Opname() {
     const diff = actual - ss.quantity;
     if (diff === 0) { toast({ title: 'Tidak ada selisih' }); return; }
 
-    await base44.entities.ApprovalRequest.create({
+    await db.entities.ApprovalRequest.create({
       type: 'stock_change',
       title: `Selisih stok: ${ss.product_name}`,
       description: `Sistem: ${ss.quantity}, Aktual: ${actual}, Selisih: ${diff}. Alasan: ${form.reason}`,
@@ -41,7 +41,7 @@ export default function Opname() {
   };
 
   const handleDefect = async (ss) => {
-    await base44.entities.ApprovalRequest.create({
+    await db.entities.ApprovalRequest.create({
       type: 'stock_change',
       title: `Barang cacat: ${ss.product_name}`,
       description: `${form.actual} unit cacat. Alasan: ${form.reason}`,

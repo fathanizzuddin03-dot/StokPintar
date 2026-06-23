@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
 import { generateInvoiceNo } from '@/lib/helpers';
@@ -15,8 +15,8 @@ export default function POSOffline() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      base44.entities.StaffStock.filter({ staff_id: user.id }),
-      base44.entities.Product.list(),
+      db.entities.StaffStock.filter({ staff_id: user.id }),
+      db.entities.Product.list(),
     ]).then(([ss, prods]) => {
       const available = prods.filter(p => ss.find(s => s.product_id === p.id && s.quantity > 0));
       setStaffStocks(ss);
@@ -26,7 +26,7 @@ export default function POSOffline() {
 
   const handleSubmit = async (data) => {
     const invoice = generateInvoiceNo('offline');
-    await base44.entities.Transaction.create({
+    await db.entities.Transaction.create({
       invoice_no: invoice, channel: 'offline', items: JSON.stringify(data.items),
       subtotal: data.subtotal, shipping_cost: 0, discount: data.discount,
       total: data.total, hpp_total: data.hpp_total, profit: data.profit,
@@ -37,11 +37,11 @@ export default function POSOffline() {
 
     for (const item of data.items) {
       const ss = staffStocks.find(s => s.product_id === item.product_id);
-      if (ss) await base44.entities.StaffStock.update(ss.id, { quantity: ss.quantity - item.qty });
+      if (ss) await db.entities.StaffStock.update(ss.id, { quantity: ss.quantity - item.qty });
     }
 
     if (data.payment_method === 'cash') {
-      await base44.entities.CashFlow.create({
+      await db.entities.CashFlow.create({
         type: 'sale_cash', amount: data.total, staff_id: user.id, staff_name: user.full_name,
         reference_id: invoice, notes: `Penjualan offline ${invoice}`,
       });

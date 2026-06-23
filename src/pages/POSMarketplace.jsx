@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
 import { generateInvoiceNo } from '@/lib/helpers';
@@ -17,9 +17,9 @@ export default function POSMarketplace() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      base44.entities.StaffStock.filter({ staff_id: user.id }),
-      base44.entities.Product.list(),
-      base44.entities.Expedition.list(),
+      db.entities.StaffStock.filter({ staff_id: user.id }),
+      db.entities.Product.list(),
+      db.entities.Expedition.list(),
     ]).then(([ss, prods, exp]) => {
       const available = prods.filter(p => ss.find(s => s.product_id === p.id && s.quantity > 0));
       setStaffStocks(ss);
@@ -30,7 +30,7 @@ export default function POSMarketplace() {
 
   const handleSubmit = async (data) => {
     const invoice = generateInvoiceNo(marketplace);
-    await base44.entities.Transaction.create({
+    await db.entities.Transaction.create({
       invoice_no: invoice, channel: marketplace, items: JSON.stringify(data.items),
       subtotal: data.subtotal, shipping_cost: data.shipping_cost, discount: data.discount,
       total: data.total, hpp_total: data.hpp_total, profit: data.profit,
@@ -42,7 +42,7 @@ export default function POSMarketplace() {
 
     for (const item of data.items) {
       const ss = staffStocks.find(s => s.product_id === item.product_id);
-      if (ss) await base44.entities.StaffStock.update(ss.id, { quantity: ss.quantity - item.qty });
+      if (ss) await db.entities.StaffStock.update(ss.id, { quantity: ss.quantity - item.qty });
     }
 
     toast({ title: 'Transaksi berhasil', description: invoice });

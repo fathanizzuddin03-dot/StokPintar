@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { formatRupiah } from '@/lib/helpers';
 import { ShoppingCart, Wallet, Package, ClipboardList } from 'lucide-react';
@@ -34,10 +34,10 @@ export default function StaffDashboard() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      base44.entities.Transaction.filter({ staff_id: user.id }, '-created_date', 20),
-      base44.entities.CashFlow.filter({ staff_id: user.id }, '-created_date', 20),
-      base44.entities.StaffStock.filter({ staff_id: user.id }),
-      base44.entities.ApprovalRequest.filter({ requested_by_id: user.id }),
+      db.entities.Transaction.filter({ staff_id: user.id }, '-created_date', 20),
+      db.entities.CashFlow.filter({ staff_id: user.id }, '-created_date', 20),
+      db.entities.StaffStock.filter({ staff_id: user.id }),
+      db.entities.ApprovalRequest.filter({ requested_by_id: user.id }),
     ]).then(([t, c, s, r]) => {
       setTransactions(t);
       setCashflows(c);

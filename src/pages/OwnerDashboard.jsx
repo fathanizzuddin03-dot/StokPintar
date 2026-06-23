@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { formatRupiah } from '@/lib/helpers';
 import { Package, TrendingUp, AlertTriangle, Banknote, ShoppingCart } from 'lucide-react';
 import {
@@ -34,10 +34,10 @@ export default function OwnerDashboard() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.Transaction.list('-created_date', 200),
-      base44.entities.CashFlow.list('-created_date', 50),
-      base44.entities.ApprovalRequest.filter({ status: 'pending' }),
+      db.entities.Product.list(),
+      db.entities.Transaction.list('-created_date', 200),
+      db.entities.CashFlow.list('-created_date', 50),
+      db.entities.ApprovalRequest.filter({ status: 'pending' }),
     ]).then(([p, t, c, a]) => {
       setProducts(p);
       setTransactions(t);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { formatRupiah, statusColor } from '@/lib/helpers';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -14,14 +14,14 @@ export default function Wholesale() {
   const [trackingForm, setTrackingForm] = useState({});
 
   const load = () => {
-    base44.entities.Transaction.filter({ channel: 'grosir' }, '-created_date', 50).then(setOrders).finally(() => setLoading(false));
+    db.entities.Transaction.filter({ channel: 'grosir' }, '-created_date', 50).then(setOrders).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
 
   const handleShip = async (order) => {
     const tracking = trackingForm[order.id];
     if (!tracking) return;
-    await base44.entities.Transaction.update(order.id, { tracking_no: tracking, status: 'shipped' });
+    await db.entities.Transaction.update(order.id, { tracking_no: tracking, status: 'shipped' });
     toast({ title: 'Resi disimpan', description: `${order.invoice_no} - ${tracking}` });
     setTrackingForm({ ...trackingForm, [order.id]: '' });
     load();

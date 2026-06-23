@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { UserPlus, Shield, ShieldOff, Users, Eye, EyeOff } from 'lucide-react';
@@ -14,7 +14,7 @@ export default function Employees() {
   const [submitting, setSubmitting] = useState(false);
 
   const load = () => {
-    base44.entities.User.list().then(setUsers).finally(() => setLoading(false));
+    db.entities.User.list().then(setUsers).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
 
@@ -25,7 +25,7 @@ export default function Employees() {
     }
     setSubmitting(true);
     try {
-      await base44.auth.createUser({ email: form.email, password: form.password, role: form.role });
+      await db.auth.createUser({ email: form.email, password: form.password, role: form.role });
       toast({ title: 'Akun berhasil dibuat', description: `${form.email} (${form.role})` });
       setShowForm(false);
       setForm({ email: '', password: '', role: 'staff' });
@@ -33,7 +33,7 @@ export default function Employees() {
     } catch (err) {
       // fallback: invite via email
       try {
-        await base44.users.inviteUser(form.email, form.role);
+        await db.users.inviteUser(form.email, form.role);
         toast({ title: 'Undangan terkirim', description: `${form.email} menerima link aktivasi` });
         setShowForm(false);
         setForm({ email: '', password: '', role: 'staff' });
@@ -46,13 +46,13 @@ export default function Employees() {
   };
 
   const toggleBlock = async (u) => {
-    await base44.entities.User.update(u.id, { is_blocked: !u.is_blocked });
+    await db.entities.User.update(u.id, { is_blocked: !u.is_blocked });
     toast({ title: u.is_blocked ? 'Akun diaktifkan' : 'Akun dinonaktifkan' });
     load();
   };
 
   const changeRole = async (u, newRole) => {
-    await base44.entities.User.update(u.id, { role: newRole });
+    await db.entities.User.update(u.id, { role: newRole });
     toast({ title: `Role diubah ke ${newRole}` });
     load();
   };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -17,8 +17,8 @@ export default function StockOut() {
   const load = () => {
     setLoading(true);
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.StockMovement.filter({ type: 'out' }, '-created_date', 30),
+      db.entities.Product.list(),
+      db.entities.StockMovement.filter({ type: 'out' }, '-created_date', 30),
     ]).then(([p, m]) => { setProducts(p); setMovements(m); }).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
@@ -28,12 +28,12 @@ export default function StockOut() {
     if (!prod || !form.quantity) return;
     const qty = Number(form.quantity);
     if (qty > (prod.stock_main || 0)) { toast({ title: 'Stok tidak cukup', variant: 'destructive' }); return; }
-    await base44.entities.StockMovement.create({
+    await db.entities.StockMovement.create({
       product_id: prod.id, product_name: prod.name, type: 'out', quantity: qty,
       from_warehouse: 'main', staff_id: user.id, staff_name: user.full_name, notes: form.notes,
     });
-    await base44.entities.Product.update(prod.id, { stock_main: (prod.stock_main || 0) - qty });
-    await base44.entities.AuditLog.create({
+    await db.entities.Product.update(prod.id, { stock_main: (prod.stock_main || 0) - qty });
+    await db.entities.AuditLog.create({
       action: 'stock_out', entity_type: 'Product', entity_id: prod.id,
       user_id: user.id, user_name: user.full_name, user_role: user.role,
       details: `Barang keluar: ${prod.name} x${qty}`,

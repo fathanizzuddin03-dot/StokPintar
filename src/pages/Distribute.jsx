@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -18,9 +18,9 @@ export default function Distribute() {
   const load = () => {
     setLoading(true);
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.User.filter({ role: 'staff' }),
-      base44.entities.StockMovement.filter({ type: 'distribute' }, '-created_date', 30),
+      db.entities.Product.list(),
+      db.entities.User.filter({ role: 'staff' }),
+      db.entities.StockMovement.filter({ type: 'distribute' }, '-created_date', 30),
     ]).then(([p, s, m]) => { setProducts(p); setStaffList(s); setMovements(m); }).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
@@ -32,21 +32,21 @@ export default function Distribute() {
     const qty = Number(form.quantity);
     if (qty > (prod.stock_main || 0)) { toast({ title: 'Stok gudang tidak cukup', variant: 'destructive' }); return; }
 
-    await base44.entities.StockMovement.create({
+    await db.entities.StockMovement.create({
       product_id: prod.id, product_name: prod.name, type: 'distribute', quantity: qty,
       from_warehouse: 'main', to_warehouse: staff.id, staff_id: staff.id, staff_name: staff.full_name,
       notes: form.notes,
     });
-    await base44.entities.Product.update(prod.id, {
+    await db.entities.Product.update(prod.id, {
       stock_main: (prod.stock_main || 0) - qty,
       stock_distributed: (prod.stock_distributed || 0) + qty,
     });
 
-    const existing = await base44.entities.StaffStock.filter({ staff_id: staff.id, product_id: prod.id });
+    const existing = await db.entities.StaffStock.filter({ staff_id: staff.id, product_id: prod.id });
     if (existing.length > 0) {
-      await base44.entities.StaffStock.update(existing[0].id, { quantity: (existing[0].quantity || 0) + qty });
+      await db.entities.StaffStock.update(existing[0].id, { quantity: (existing[0].quantity || 0) + qty });
     } else {
-      await base44.entities.StaffStock.create({
+      await db.entities.StaffStock.create({
         staff_id: staff.id, staff_name: staff.full_name,
         product_id: prod.id, product_name: prod.name, sku: prod.sku, quantity: qty,
       });

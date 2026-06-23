@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { formatRupiah } from '@/lib/helpers';
 import { ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 
@@ -13,8 +13,8 @@ export default function WarehouseReports() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.StockMovement.list('-created_date', 50),
-      base44.entities.Transaction.filter({ channel: 'grosir' }, '-created_date', 50),
+      db.entities.StockMovement.list('-created_date', 50),
+      db.entities.Transaction.filter({ channel: 'grosir' }, '-created_date', 50),
     ]).then(([m, t]) => { setMovements(m); setTransactions(t); }).finally(() => setLoading(false));
   }, []);
 

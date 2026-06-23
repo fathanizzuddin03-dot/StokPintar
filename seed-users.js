@@ -2,17 +2,19 @@ import { createClient } from '@base44/sdk';
 import fs from 'fs';
 import path from 'path';
 
-// Parse .env.local manually to avoid requiring external dependency 'dotenv'
+// Parse .env.local manually and trim carriage returns
 const envPath = path.resolve(process.cwd(), '.env.local');
 let env = {};
 
 if (fs.existsSync(envPath)) {
   const content = fs.readFileSync(envPath, 'utf-8');
   content.split('\n').forEach(line => {
-    const match = line.match(/^\s*([\w\.\-]+)\s*=\s*(.*)?\s*$/);
+    const cleanedLine = line.replace('\r', '').trim();
+    const match = cleanedLine.match(/^\s*([\w\.\-]+)\s*=\s*(.*)?\s*$/);
     if (match) {
-      let key = match[1];
+      let key = match[1].trim();
       let value = match[2] || '';
+      value = value.trim();
       // Remove quotes if present
       if (value.length > 0 && value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
         value = value.substring(1, value.length - 1);
@@ -22,15 +24,17 @@ if (fs.existsSync(envPath)) {
   });
 } else {
   console.error("Error: File .env.local tidak ditemukan!");
-  console.log("Silakan salin .env.example menjadi .env.local dan isi VITE_BASE44_APP_ID dan VITE_BASE44_APP_BASE_URL terlebih dahulu.");
   process.exit(1);
 }
 
 const appId = env.VITE_BASE44_APP_ID;
 const appBaseUrl = env.VITE_BASE44_APP_BASE_URL;
 
+console.log(`Parsed App ID: [${appId}]`);
+console.log(`Parsed Backend URL: [${appBaseUrl}]`);
+
 if (!appId || !appBaseUrl) {
-  console.error("Error: VITE_BASE44_APP_ID atau VITE_BASE44_APP_BASE_URL belum diisi di .env.local!");
+  console.error("Error: VITE_BASE44_APP_ID atau VITE_BASE44_APP_BASE_URL kosong!");
   process.exit(1);
 }
 
@@ -56,12 +60,11 @@ async function seed() {
       await base44.auth.register({ 
         email: user.email, 
         password: user.password,
-        role: user.role // Beberapa backend Base44 menerima role langsung saat registrasi
+        role: user.role
       });
       console.log(`Sukses membuat akun: ${user.email}`);
     } catch (error) {
       console.error(`Gagal membuat akun ${user.email}:`, error.message || error);
-      console.log("Mencoba alternatif: pastikan Anda login sebagai Owner di UI lalu buat melalui menu Manajemen Karyawan.");
     }
   }
 }

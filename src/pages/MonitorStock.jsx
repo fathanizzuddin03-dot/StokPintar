@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -17,14 +17,14 @@ export default function MonitorStock() {
   const load = () => {
     setLoading(true);
     Promise.all([
-      base44.entities.Product.list(),
-      base44.entities.StaffStock.list(),
+      db.entities.Product.list(),
+      db.entities.StaffStock.list(),
     ]).then(([p, s]) => { setProducts(p); setStaffStocks(s); }).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
 
   const handleRequestChange = async (product) => {
-    await base44.entities.ApprovalRequest.create({
+    await db.entities.ApprovalRequest.create({
       type: 'stock_change',
       title: `Koreksi stok: ${product.name}`,
       description: `Stok saat ini: ${product.stock_main}. Diubah ke: ${reqForm.new_qty}. Alasan: ${reqForm.reason}`,

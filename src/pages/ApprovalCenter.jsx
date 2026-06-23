@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { statusColor } from '@/lib/helpers';
 import { formatRupiah } from '@/lib/helpers';
@@ -19,19 +19,19 @@ export default function ApprovalCenter() {
   const load = () => {
     setLoading(true);
     const query = filter === 'all' ? {} : { status: filter };
-    base44.entities.ApprovalRequest.filter(query, '-created_date', 50).then(setRequests).finally(() => setLoading(false));
+    db.entities.ApprovalRequest.filter(query, '-created_date', 50).then(setRequests).finally(() => setLoading(false));
   };
 
   useEffect(() => { load(); }, [filter]);
 
   const handleApprove = async (req) => {
-    await base44.entities.ApprovalRequest.update(req.id, {
+    await db.entities.ApprovalRequest.update(req.id, {
       status: 'approved',
       approved_by_id: user.id,
       approved_by_name: user.full_name,
       approved_date: new Date().toISOString(),
     });
-    await base44.entities.AuditLog.create({
+    await db.entities.AuditLog.create({
       action: 'approve_request',
       entity_type: 'ApprovalRequest',
       entity_id: req.id,
@@ -45,14 +45,14 @@ export default function ApprovalCenter() {
   };
 
   const handleReject = async (req) => {
-    await base44.entities.ApprovalRequest.update(req.id, {
+    await db.entities.ApprovalRequest.update(req.id, {
       status: 'rejected',
       approved_by_id: user.id,
       approved_by_name: user.full_name,
       approved_date: new Date().toISOString(),
       reject_reason: rejectReason,
     });
-    await base44.entities.AuditLog.create({
+    await db.entities.AuditLog.create({
       action: 'reject_request',
       entity_type: 'ApprovalRequest',
       entity_id: req.id,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { formatRupiah, statusColor } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
@@ -16,13 +16,13 @@ export default function Returns() {
 
   useEffect(() => {
     if (!user) return;
-    base44.entities.Transaction.filter({ staff_id: user.id, status: 'completed' }, '-created_date', 30).then(setTransactions).finally(() => setLoading(false));
+    db.entities.Transaction.filter({ staff_id: user.id, status: 'completed' }, '-created_date', 30).then(setTransactions).finally(() => setLoading(false));
   }, [user]);
 
   const handleReturn = async (txn) => {
-    await base44.entities.Transaction.update(txn.id, { status: 'returned', notes: reason });
+    await db.entities.Transaction.update(txn.id, { status: 'returned', notes: reason });
     if (txn.payment_method === 'cash') {
-      await base44.entities.CashFlow.create({
+      await db.entities.CashFlow.create({
         type: 'refund', amount: txn.total, staff_id: user.id, staff_name: user.full_name,
         reference_id: txn.invoice_no, notes: `Retur: ${reason}`,
       });
@@ -30,7 +30,7 @@ export default function Returns() {
     toast({ title: 'Retur diproses', description: txn.invoice_no });
     setSelectedId(null);
     setReason('');
-    base44.entities.Transaction.filter({ staff_id: user.id, status: 'completed' }, '-created_date', 30).then(setTransactions);
+    db.entities.Transaction.filter({ staff_id: user.id, status: 'completed' }, '-created_date', 30).then(setTransactions);
   };
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-gray-200 border-t-gray-800 rounded-full animate-spin" /></div>;

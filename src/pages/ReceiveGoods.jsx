@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { PackageSearch } from 'lucide-react';
 
@@ -10,7 +10,7 @@ export default function ReceiveGoods() {
 
   useEffect(() => {
     if (!user) return;
-    base44.entities.StockMovement.filter({ to_warehouse: user.id, type: 'distribute' }, '-created_date', 30).then(setMovements).finally(() => setLoading(false));
+    db.entities.StockMovement.filter({ to_warehouse: user.id, type: 'distribute' }, '-created_date', 30).then(setMovements).finally(() => setLoading(false));
   }, [user]);
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-gray-200 border-t-gray-800 rounded-full animate-spin" /></div>;

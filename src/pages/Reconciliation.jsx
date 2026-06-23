@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { formatRupiah, statusColor } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -13,7 +13,7 @@ export default function Reconciliation() {
   const [form, setForm] = useState({ order_id: '', tracking_no: '', shopee_amount: '', warehouse_amount: '', notes: '' });
 
   const load = () => {
-    base44.entities.ShopeeReconciliation.list('-created_date', 50).then(setRecords).finally(() => setLoading(false));
+    db.entities.ShopeeReconciliation.list('-created_date', 50).then(setRecords).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, []);
 
@@ -21,7 +21,7 @@ export default function Reconciliation() {
     const shopee = Number(form.shopee_amount) || 0;
     const warehouse = Number(form.warehouse_amount) || 0;
     const diff = shopee - warehouse;
-    await base44.entities.ShopeeReconciliation.create({
+    await db.entities.ShopeeReconciliation.create({
       ...form,
       shopee_amount: shopee,
       warehouse_amount: warehouse,

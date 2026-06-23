@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { formatRupiah } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ export default function CashDeposit() {
   const handleSubmit = async () => {
     if (!amount) return;
     setSubmitting(true);
-    await base44.entities.ApprovalRequest.create({
+    await db.entities.ApprovalRequest.create({
       type: 'cash_deposit',
       title: `Setoran tunai ${formatRupiah(Number(amount))}`,
       description: `${user.full_name} ingin menyetor uang tunai. ${notes}`,
@@ -24,7 +24,7 @@ export default function CashDeposit() {
       requested_by_id: user.id,
       requested_by_name: user.full_name,
     });
-    await base44.entities.CashFlow.create({
+    await db.entities.CashFlow.create({
       type: 'deposit', amount: Number(amount), staff_id: user.id, staff_name: user.full_name,
       notes: notes || 'Setoran tunai', status: 'pending',
     });

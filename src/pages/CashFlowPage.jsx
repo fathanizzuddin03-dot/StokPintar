@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { formatRupiah, statusColor } from '@/lib/helpers';
 import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
@@ -11,7 +11,7 @@ export default function CashFlowPage() {
 
   useEffect(() => {
     if (!user) return;
-    base44.entities.CashFlow.filter({ staff_id: user.id }, '-created_date', 50).then(setCashflows).finally(() => setLoading(false));
+    db.entities.CashFlow.filter({ staff_id: user.id }, '-created_date', 50).then(setCashflows).finally(() => setLoading(false));
   }, [user]);
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-gray-200 border-t-gray-800 rounded-full animate-spin" /></div>;

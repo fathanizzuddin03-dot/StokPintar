@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/api/dbClient';
 import { useAuth } from '@/lib/AuthContext';
 import { formatRupiah, statusColor } from '@/lib/helpers';
 import { Button } from '@/components/ui/button';
@@ -14,22 +14,22 @@ export default function ValidateReceipt() {
 
   const load = () => {
     if (!user) return;
-    base44.entities.CashFlow.filter({ staff_id: user.id, type: 'handover_in', status: 'pending' }).then(setPending).finally(() => setLoading(false));
+    db.entities.CashFlow.filter({ staff_id: user.id, type: 'handover_in', status: 'pending' }).then(setPending).finally(() => setLoading(false));
   };
   useEffect(() => { load(); }, [user]);
 
   const handleConfirm = async (cf) => {
-    await base44.entities.CashFlow.update(cf.id, { status: 'confirmed' });
+    await db.entities.CashFlow.update(cf.id, { status: 'confirmed' });
     // Also confirm the outgoing side
-    const outgoing = await base44.entities.CashFlow.filter({ counterpart_id: user.id, type: 'handover_out', status: 'pending' });
+    const outgoing = await db.entities.CashFlow.filter({ counterpart_id: user.id, type: 'handover_out', status: 'pending' });
     const match = outgoing.find(o => o.amount === cf.amount && o.staff_id === cf.counterpart_id);
-    if (match) await base44.entities.CashFlow.update(match.id, { status: 'confirmed' });
+    if (match) await db.entities.CashFlow.update(match.id, { status: 'confirmed' });
     toast({ title: 'Penerimaan dikonfirmasi' });
     load();
   };
 
   const handleReject = async (cf) => {
-    await base44.entities.CashFlow.update(cf.id, { status: 'rejected' });
+    await db.entities.CashFlow.update(cf.id, { status: 'rejected' });
     toast({ title: 'Penerimaan ditolak' });
     load();
   };
